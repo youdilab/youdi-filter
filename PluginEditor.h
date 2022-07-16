@@ -35,14 +35,12 @@ private:
     
     //GUI Controls
     juce::Slider dialFrequency;
-    juce::ComboBox selectFilterType;
     juce::ToggleButton toggleOnOff;
     juce::TextButton radioFilterLow;
     juce::TextButton radioFilterHigh;    
     
     //Connections between GUI controls and ValueTree
     juce::AudioProcessorValueTreeState::SliderAttachment dialFrequencyAttachment;
-    juce::AudioProcessorValueTreeState::ComboBoxAttachment selectFilterTypeAttachment;
     juce::AudioProcessorValueTreeState::ButtonAttachment toggleOnOffAttachment;
     juce::AudioProcessorValueTreeState::ButtonAttachment radioFilterLowAttachment;
     juce::AudioProcessorValueTreeState::ButtonAttachment radioFilterHighAttachment;

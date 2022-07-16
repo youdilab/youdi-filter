@@ -17,12 +17,13 @@ const juce::Colour colourLightYellow = juce::Colour::fromFloatRGBA(0.956f, 0.933
 const juce::Colour colourTransparent = juce::Colour::fromFloatRGBA(0.023f, 0.274f, 0.207f, 0.0f);
 const juce::Colour colourDarkGrey = juce::Colour::fromFloatRGBA(0.003f, 0.094f, 0.070f, 1.0f);
 
+const int filterTypeRadioGroup = 1;
+
 //==============================================================================
 //Constructor includes initializations of attachments between the value tree and GUI controls
 YoudiFilterOneAudioProcessorEditor::YoudiFilterOneAudioProcessorEditor (YoudiFilterOneAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p),
     dialFrequencyAttachment(audioProcessor.valueTree,"CUTOFF",dialFrequency),
-    selectFilterTypeAttachment(audioProcessor.valueTree, "LOWHIGH", selectFilterType),
     toggleOnOffAttachment(audioProcessor.valueTree, "ACTIVE", toggleOnOff),
     radioFilterLowAttachment(audioProcessor.valueTree, "RADIOLOW", radioFilterLow),
     radioFilterHighAttachment(audioProcessor.valueTree, "RADIOHIGH", radioFilterHigh),
@@ -37,12 +38,9 @@ YoudiFilterOneAudioProcessorEditor::YoudiFilterOneAudioProcessorEditor (YoudiFil
     dialFrequency.setTextValueSuffix(" Hz");
     dialFrequency.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     dialFrequency.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 100, 20);
-
-    selectFilterType.addItemList(juce::StringArray{ "Low Pass", "High Pass" }, 1);
-    selectFilterType.setSelectedItemIndex(1);
     
-    radioFilterLow.setRadioGroupId(1);
-    radioFilterHigh.setRadioGroupId(1);
+    radioFilterLow.setRadioGroupId(filterTypeRadioGroup);
+    radioFilterHigh.setRadioGroupId(filterTypeRadioGroup);
     
     radioFilterLow.setClickingTogglesState(true);
     radioFilterHigh.setClickingTogglesState(true);
@@ -56,11 +54,9 @@ YoudiFilterOneAudioProcessorEditor::YoudiFilterOneAudioProcessorEditor (YoudiFil
     toggleOnOff.addListener(this);
 
     addAndMakeVisible(toggleOnOff);
-    addAndMakeVisible(selectFilterType);
     addAndMakeVisible(dialFrequency);
     addAndMakeVisible(radioFilterLow);
     addAndMakeVisible(radioFilterHigh);
-    //radioFilterLow.setToggleable(true);
 
     setSize(250, 200);
 
@@ -77,13 +73,6 @@ YoudiFilterOneAudioProcessorEditor::YoudiFilterOneAudioProcessorEditor (YoudiFil
 
     toggleOnOff.setToggleState(true, juce::NotificationType::sendNotification);
     toggleOnOff.setButtonText("Filter ON");
-
-    selectFilterType.setColour(juce::ComboBox::backgroundColourId, colourDarkGreen);
-    selectFilterType.setColour(juce::ComboBox::textColourId, colourLightGreen);
-    selectFilterType.setColour(juce::ComboBox::outlineColourId, colourLightGreen);
-    selectFilterType.setColour(juce::ComboBox::buttonColourId, colourLightGreen);
-    selectFilterType.setColour(juce::ComboBox::arrowColourId, colourLightOrange);
-    selectFilterType.setColour(juce::ComboBox::focusedOutlineColourId, colourLightYellow);
 
     dialFrequency.setColour(juce::Slider::thumbColourId, colourLightOrange);
     dialFrequency.setColour(juce::Slider::textBoxOutlineColourId, colourTransparent);
@@ -109,7 +98,6 @@ void YoudiFilterOneAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(colourDarkGreen);
-
     g.setColour(colourLightGreen);
     g.setFont (15.0f);
 }
@@ -118,27 +106,28 @@ void YoudiFilterOneAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+
+    //Evaluate total area
     auto total_width = getWidth();
     auto total_height = getHeight();
     auto total_area = getLocalBounds();
 
+    //Define constants
     auto border = 0.04*total_height;
     auto buttonAreaHeight = 0.20*total_height;
 
+    //Allocate recangular areas for different GUI controls
     auto buttonArea = total_area.removeFromTop(buttonAreaHeight);
     auto buttonAreaLeft = buttonArea.removeFromLeft(total_width/2);
     auto& buttonAreaRight = buttonArea.reduced(border);
     auto& lowFilterArea = buttonAreaRight.removeFromLeft((total_width / 4) -border).withTrimmedLeft(border);
     auto& highFilterArea = buttonAreaRight.withTrimmedRight(border);
-
     auto& onOffButtonArea = buttonAreaLeft.reduced(border);
-
     auto& dialFrequencyArea = total_area.reduced(border);
 
-    toggleOnOff.setBounds(onOffButtonArea);
-    
+    //Place GUI controls in the respective area within the window
+    toggleOnOff.setBounds(onOffButtonArea);   
     dialFrequency.setBounds(dialFrequencyArea);
-
     radioFilterLow.setBounds(lowFilterArea);
     radioFilterHigh.setBounds(highFilterArea);
 }
@@ -146,6 +135,7 @@ void YoudiFilterOneAudioProcessorEditor::resized()
 void YoudiFilterOneAudioProcessorEditor::buttonClicked(juce::Button* button)
 {
     //Handle clicks on 'ACTIVE' button
+    //Button appearance will change based on its status
     if (button == &toggleOnOff) {
         if (toggleOnOff.getToggleState()) {
             toggleOnOff.setColour(juce::ToggleButton::textColourId, colourLightOrange);

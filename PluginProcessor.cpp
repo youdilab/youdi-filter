@@ -172,12 +172,8 @@ void YoudiFilterOneAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
 
     //Check if the filter is activated
     if (*valueTree.getRawParameterValue("ACTIVE")) {
+        //Read Cutoff frequency
         float frequency = *valueTree.getRawParameterValue("CUTOFF");
-        
-        //How to fetch the choice of AudioParameterChoice
-        //https://forum.juce.com/t/how-to-set-the-value-of-an-audioparameterchoice-from-the-editor/50998
-        juce::AudioParameterChoice * ptrChoice =  dynamic_cast<juce::AudioParameterChoice*>(valueTree.getParameter("LOWHIGH"));
-        int filterChoice = *ptrChoice;
 
         //Read which filter type is selected in RADIOLOW and RADIOHIGH parameters
         bool radioLowSelected = *valueTree.getRawParameterValue("RADIOLOW");
@@ -242,12 +238,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout YoudiFilterOneAudioProcessor
     paramLayout.add(std::make_unique<juce::AudioParameterBool>("ACTIVE", "ON/OFF", true));
 
     //Add Filter Parameters
-
-    //Dropdown selection of filter type
-    paramLayout.add(std::make_unique<juce::AudioParameterChoice>("LOWHIGH", "Filter Type", juce::StringArray{ "Low Pass", "High Pass"}, 1));
     
     //Cutoff Frequency
     paramLayout.add(std::make_unique<juce::AudioParameterFloat>("CUTOFF","Cutoff Frequency(Hz)",20.0f,20000.0f,500.0f));
+    
 
     //Radio group selection of filter type
     paramLayout.add(std::make_unique<juce::AudioParameterBool>("RADIOLOW", "Low-pass", true));
