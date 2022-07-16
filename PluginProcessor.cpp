@@ -240,8 +240,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout YoudiFilterOneAudioProcessor
     //Add Filter Parameters
     
     //Cutoff Frequency
-    paramLayout.add(std::make_unique<juce::AudioParameterFloat>("CUTOFF","Cutoff Frequency(Hz)",20.0f,20000.0f,500.0f));
-    
+    paramLayout.add(std::make_unique<juce::AudioParameterFloat>("CUTOFF", "Cutoff Frequency(Hz)", juce::NormalisableRange<float>::NormalisableRange(20.0f, 20000.0f, 0.1f, 0.3f, false), 261.6f));//261.6Hz is the frequency of C3
 
     //Radio group selection of filter type
     paramLayout.add(std::make_unique<juce::AudioParameterBool>("RADIOLOW", "Low-pass", true));
